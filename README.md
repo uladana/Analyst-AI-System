@@ -1,1 +1,1 @@
-# Analyst-AI-System
+📊 Multimodales KI-System für Marktanalysen
