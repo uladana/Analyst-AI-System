@@ -1,47 +1,62 @@
-# agents/analysis_agent/trends.py
+# trends.py
 
 import os
+import sys
 import json
 import pandas as pd
 
-def load_financial_data(folder_path="/Users/paulasalda/Downloads/daten_json"):
+# Agrega la raíz del proyecto al path — versión robusta y segura
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+# Ahora sí, importa config
+from utils.config import JSON_DATA_DIR
+
+def load_financial_data(data_dir: str = JSON_DATA_DIR) -> pd.DataFrame:
     """
-    Carga todos los JSON del directorio y los convierte en un DataFrame estructurado.
+    Carga y unifica los archivos JSON en un solo DataFrame.
+    Realiza limpieza básica de tipos de datos.
     """
     data = []
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".json"):
-            full_path = os.path.join(folder_path, filename)
+    # 📁 Recorrer todos los archivos .json en la carpeta
+    for file in os.listdir(data_dir):
+        if file.endswith(".json"):
+            file_path = os.path.join(data_dir, file)
             try:
-                with open(full_path, 'r') as f:
-                    json_data = json.load(f)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = json.load(f)
+                    data.append(content)
+            except json.JSONDecodeError as e:
+                print(f"❌ Error al leer {file}: {e}")
 
-                    entry = {
-                        "Company": json_data.get("company", "Unknown"),
-                        "Year": json_data.get("year", None),
-                        "Quarter": json_data.get("quarter", None),
-                        **json_data.get("financials", {})  # Aquí están Revenue, Net Income, EPS, etc.
-                    }
+    # 📊 Convertir lista de dicts en DataFrame
+    df = pd.DataFrame(data)
 
-                    data.append(entry)
-            except Exception as e:
-                print(f"⚠️ Error al cargar {filename}: {e}")
-    
-    return pd.DataFrame(data)
+    # 🧹 Conversión y limpieza de columnas
+    if 'date' in df.columns:
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    if 'revenue' in df.columns:
+        df['revenue'] = pd.to_numeric(df['revenue'], errors='coerce')
+    if 'net_income' in df.columns:
+        df['net_income'] = pd.to_numeric(df['net_income'], errors='coerce')
+    if 'stock_price' in df.columns:
+        df['stock_price'] = pd.to_numeric(df['stock_price'], errors='coerce')
 
-def preprocess_data(df):
-    df["date"] = pd.to_datetime(df["date"])
-    df.sort_values("date", inplace=True)
-    df["revenue_billion"] = df["revenue"] / 1e9
-    df["net_income_billion"] = df["net_income"] / 1e9
     return df
 
-def analyze_trend(df, company, metric):
-    """
-    Devuelve los valores del métrico para la empresa seleccionada ordenados por tiempo.
-    """
-    df_filtered = df[df["Company"] == company].copy()
-    df_filtered["Quarter_Index"] = df_filtered["Year"].astype(str) + "-" + df_filtered["Quarter"]
-    df_filtered = df_filtered.sort_values(by=["Year", "Quarter"])
-    return df_filtered[["Quarter_Index", metric]]
+# 🧪 Modo de prueba directa: ejecutar este archivo solo
+if __name__ == "__main__":
+    df = load_financial_data()
+    
+    print("\n📄 Primeras filas del DataFrame:")
+    print(df.head())
+
+    print("\n🏢 Empresas encontradas:")
+    print(df['company'].value_counts())
+
+    print("\n📆 Rango de fechas:")
+    print(df['date'].min(), "→", df['date'].max())
+
+    print("🧭 sys.path contiene:\n", "\n".join(sys.path))

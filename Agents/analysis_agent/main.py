@@ -1,7 +1,7 @@
-from trends import load_financial_data, preprocess_data
-from visualizations import plot_revenue, plot_profit_margin
-from forecast import forecast_revenue
-from explainer import generate_summary
+from Agents.analysis_agent.trends import load_financial_data, preprocess_data
+from Agents.analysis_agent.visualizations import plot_revenue, plot_profit_margin
+from Agents.analysis_agent.forecast import forecast_revenue
+from Agents.analysis_agent.explainer import generate_summary
 
 # Cargar y procesar los datos
 df = load_financial_data("../../data/processed")  # Ajusta si tu path es distinto

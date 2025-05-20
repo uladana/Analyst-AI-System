@@ -1,7 +1,7 @@
 # agents/analysis_agent/visualizations.py
 
 import plotly.graph_objects as go
-from .trends import analyze_trend
+from Agents.analysis_agent.trends import analyze_trend
 
 def plot_metric(df, company, metric):
     trend = analyze_trend(df, company, metric)
