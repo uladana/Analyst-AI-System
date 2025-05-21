@@ -1,0 +1,9 @@
+ Trendübersicht nach Unternehmen (2019–2024)
+
+Apple: Tendenz  rückläufig. Durchschnittliche Anzahl an Dokumenten pro Jahr: 6476.5.
+Microsoft: Tendenz  rückläufig. Durchschnittliche Anzahl an Dokumenten pro Jahr: 6949.0.
+Google: Tendenz  steigend. Durchschnittliche Anzahl an Dokumenten pro Jahr: 10823.0.
+NVIDIA: Tendenz  rückläufig. Durchschnittliche Anzahl an Dokumenten pro Jahr: 15488.8.
+Meta: Tendenz  rückläufig. Durchschnittliche Anzahl an Dokumenten pro Jahr: 9408.3.
+
+Automatisch generiert vom Analyst-AI-System.
