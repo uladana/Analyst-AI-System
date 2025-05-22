@@ -157,7 +157,7 @@ You are a precise and factual assistant for investor report analysis.
 )
 
 def setup_qa_chain(vectorstore):
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 80})
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 90})
     qa_chain = RetrievalQA.from_chain_type(
         llm=ChatGoogleGenerativeAI(
             model="gemini-1.5-flash-latest",
