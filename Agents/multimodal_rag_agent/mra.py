@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from dotenv import load_dotenv
 from pathlib import Path
 import shutil
@@ -17,15 +18,20 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
 
-# Paths (optionally use .env to override)
 PROCESSED_DIR = Path(os.getenv("PROCESSED_DIR", r"C:\Users\hshakademie7\Desktop\Analyst-AI-System\data\processed"))
 PERSIST_DIR = Path(os.getenv("PERSIST_DIR", r"C:\Users\hshakademie7\Desktop\Analyst-AI-System\data\embeddings"))
 
-# Initialize embeddings
 embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
 
+# ➕ Helpers to detect company and year from filenames
+def detect_company_from_filename(filename):
+    return filename.split("_")[0].capitalize()  # e.g. "apple_2023.json" → Apple
+
+def detect_year_from_filename(filename):
+    match = re.search(r'\d{4}', filename)
+    return match.group(0) if match else "unknown"
+
 def chunk_list(lst, chunk_size):
-    """Yield successive chunks of size chunk_size from lst."""
     for i in range(0, len(lst), chunk_size):
         yield lst[i:i + chunk_size]
 
@@ -45,6 +51,9 @@ def load_all_json_files(processed_dir: Path):
             except json.JSONDecodeError as e:
                 print(f"⚠️ Fehler beim Laden der Datei {file.name}: {e}")
                 continue
+
+        company = detect_company_from_filename(file.name)
+        year = detect_year_from_filename(file.name)
 
         chunks = []
         for entry in data:
@@ -67,7 +76,14 @@ def load_all_json_files(processed_dir: Path):
             split_chunks = text_splitter.split_text("\n\n".join(chunks))
             for chunk in split_chunks:
                 if chunk.strip():
-                    documents.append(Document(page_content=chunk, metadata={"source": str(file)}))
+                    documents.append(Document(
+                        page_content=chunk,
+                        metadata={
+                            "source": str(file),
+                            "company": company,
+                            "year": year
+                        }
+                    ))
 
     print(f"✅ Insgesamt {len(documents)} Dokumente aus {len(files)} Dateien geladen.")
     for i, doc in enumerate(documents[:3]):
@@ -76,11 +92,6 @@ def load_all_json_files(processed_dir: Path):
     return documents
 
 def create_or_load_vectorstore(documents):
-    # Optional: Clear previous vectorstore
-    # if PERSIST_DIR.exists():
-    #     print("🧹 Lösche alten Embeddings-Ordner...")
-    #     shutil.rmtree(PERSIST_DIR)
-
     vectorstore = Chroma(
         persist_directory=str(PERSIST_DIR),
         embedding_function=embedding_model,
@@ -118,7 +129,6 @@ def create_or_load_vectorstore(documents):
             total_added += len(text_chunk)
             print(f"💾 Added {total_added} vectors so far...")
 
-        # Persistence is automatic in langchain_chroma.Chroma
         count_after = vectorstore._collection.count()
         print(f"💾 Vektoren gespeichert (automatisch). Aktuelle Anzahl: {count_after}")
 
@@ -147,7 +157,7 @@ You are a precise and factual assistant for investor report analysis.
 )
 
 def setup_qa_chain(vectorstore):
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 50})
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 80})
     qa_chain = RetrievalQA.from_chain_type(
         llm=ChatGoogleGenerativeAI(
             model="gemini-1.5-flash-latest",
