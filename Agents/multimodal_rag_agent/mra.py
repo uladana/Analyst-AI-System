@@ -153,7 +153,6 @@ def setup_qa_chain(vectorstore):
             model="gemini-1.5-flash-latest",
             google_api_key=GOOGLE_API_KEY,
             temperature=0.1,
-            convert_system_message_to_human=True
         ),
         chain_type="stuff",
         retriever=retriever,
