@@ -1,75 +1,67 @@
-import os
 import gradio as gr
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_huggingface import HuggingFaceEndpoint
 from dotenv import load_dotenv
-from google.api_core.exceptions import ResourceExhausted
+from rag_with_qa_gemini import qa_chain, run_qa_check
+import pandas as pd
+import plotly.express as px
+import os
 
 load_dotenv()
 
-# Embedding-Model
-embedding_function = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_function)
-retriever = db.as_retriever()
+# === Beispiel-Chart ===
+def generate_sample_chart():
+    df = pd.DataFrame({
+        "Quartal": ["Q1", "Q2", "Q3", "Q4"],
+        "Umsatz (Mrd $)": [18.4, 20.1, 22.3, 24.7]
+    })
+    fig = px.bar(df, x="Quartal", y="Umsatz (Mrd $)", title="Umsatzentwicklung NVIDIA FY24")
+    return fig
 
-# Prompt-Template
-prompt_template = PromptTemplate(
-    input_variables=["context", "question"],
-    template="""
-Beantworte die Frage basierend auf dem folgenden Kontext.
-Wenn du die Antwort nicht weißt, gib ehrlich zu, dass du es nicht weißt.
-
-Kontext:
-{context}
-
-Frage:
-{question}
-""".strip()
-)
-
-# Hauptmodell (Gemini)
-try:
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.0)
-    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, chain_type_kwargs={"prompt": prompt_template})
-except ResourceExhausted as e:
-    print("⚠️ Gemini-Quota überschritten. Fallback wird vorbereitet...")
-
-# Fallback (z. B. Falcon)
-fallback_llm = HuggingFaceEndpoint(
-    repo_id="google/flan-t5-large",
-    huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
-    temperature=0.0
-)
-fallback_chain = RetrievalQA.from_chain_type(llm=fallback_llm, retriever=retriever, chain_type_kwargs={"prompt": prompt_template})
-
-# Gradio-Logik
+# === Frage beantworten + QA ===
 def answer_and_validate(user_query):
     try:
-        print("🧠 Frage wird mit Gemini verarbeitet...")
-        return qa_chain.invoke({"query": user_query})["result"]
+        antwort = qa_chain.invoke({"query": user_query})
+        antwort_text = antwort["result"]
+        quellen = antwort["source_documents"]
+        kontext = "\n".join([doc.page_content for doc in quellen])
+        qa_result = run_qa_check(antwort_text, kontext)
+
+        quellen_text = "\n".join([
+            f"- {doc.metadata.get('source', '?')} (Seite {doc.metadata.get('page', '?')})"
+            for doc in quellen
+        ])
+
+        result = f"**Antwort:**\n{antwort_text}\n\n**Quellen:**\n{quellen_text}\n\n"
+        result += "**QA-Prüfung:**\n"
+        for k, v in qa_result.items():
+            result += f"- {k}: {v}\n"
+
+        return result
+
     except Exception as e:
-        print(f"⚠️ Gemini-Fehler: {e}\n→ Fallback wird verwendet...")
-        try:
-            return fallback_chain.invoke({"query": user_query})["result"]
-        except Exception as fallback_error:
-            import traceback
-            traceback_str = traceback.format_exc()
-            print("❌ Fallback-Fehler:", traceback_str)
-            return f"❌ Fallback fehlgeschlagen:\n{fallback_error}"
+        return f"❌ Fehler: {str(e)}"
 
-# Gradio-GUI
-with gr.Blocks(title="Analyst-AI-System") as demo:
-    gr.Markdown("# 📊 Analyst AI (Gemini + Fallback)")
-    with gr.Row():
-        input_text = gr.Textbox(label="Frage eingeben", placeholder="z.B. Was steht im Risikobericht?")
-    with gr.Row():
-        output_text = gr.Textbox(label="Antwort", interactive=False)
-    with gr.Row():
-        ask_button = gr.Button("Frage stellen")
-    ask_button.click(fn=answer_and_validate, inputs=input_text, outputs=output_text)
+# === Gradio UI ===
+demo = gr.Blocks()
 
-demo.launch()
+with demo:
+    gr.Markdown("# Multimodales KI-System mit Gemini")
+    with gr.Row():
+        frage = gr.Textbox(label="Ihre Frage", placeholder="Z. B. Wie war NVIDIAs Umsatz im Q4 2024?")
+        antwortfeld = gr.Markdown(label="Antwort & QA")
+    frage.submit(fn=answer_and_validate, inputs=frage, outputs=antwortfeld)
+
+    with gr.Row():
+        gr.Markdown("### 📊 Beispielhafte Umsatzentwicklung")
+        plot = gr.Plot(label="Chart")
+        gr.Button("Chart anzeigen").click(fn=generate_sample_chart, inputs=[], outputs=plot)
+
+    with gr.Row():
+        gr.Markdown("### 🧠 Agentensteuerung")
+        gr.Markdown("""
+        - 🤖 Retriever-Agent (ChromaDB)
+        - ✨ Gemini LLM (Google Generative AI)
+        - 🔍 QA-/Ethik-Agent für Prüfung
+    """)
+
+if __name__ == "__main__":
+    demo.launch()
