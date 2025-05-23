@@ -1,0 +1,76 @@
+{
+  "company": "Google",
+  "articles": [
+    {
+      "source": {
+        "id": null,
+        "name": "Boredpanda.com"
+      },
+      "author": "Karina Babenok",
+      "title": "Meghan Markle Gets Brutally Slammed For Not Mentioning Prince Harry In Elaborate Anniversary Post",
+      "description": "Meghan Markle included rare photos of her and Prince Harry from their first year of romance, along with moments of love around the house with their two kids.",
+      "url": "https://www.boredpanda.com/meghan-markle-slammed-after-not-mentioning-prince-harry-anniversary-post/",
+      "urlToImage": "https://www.boredpanda.com/blog/wp-content/uploads/2025/05/meghan-markle-slammed-after-not-mentioning-prince-harry-anniversary-post-fb.png",
+      "publishedAt": "2025-05-21T08:32:23Z",
+      "content": "Meghan Markle celebrated seven years of wedded bliss with a tribute to her marriage, complete with her baby bump, rare family snaps on the beach, and never-before-seen wedding pictures.\r\nBut some fan… [+8795 chars]",
+      "sentiment": "positive"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Authority"
+      },
+      "author": "Andy Walker",
+      "title": "NotebookLM is getting AI video explainers, and they look surprisingly useful",
+      "description": "NotebookLM will soon receive a new Video Overviews feature that can turn your documents, PDFs, and photos into short documentaries.",
+      "url": "https://www.androidauthority.com/notebooklm-video-overviews-confirmed-3559871/",
+      "urlToImage": "https://www.androidauthority.com/wp-content/uploads/2025/02/notebooklm-car-manual-feat.jpg",
+      "publishedAt": "2025-05-21T08:31:09Z",
+      "content": "<ul><li>NotebookLM users will soon be able to generate Video Overviews using uploaded sources like PDFs or photos.</li><li>The feature could be useful for topics that benefit from a visual learning m… [+1953 chars]",
+      "sentiment": "positive"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Neowin"
+      },
+      "author": "Aditya Tiwari",
+      "title": "Google's NotebookLM gets Video Overviews and duration control for Audio Overviews",
+      "description": "NotebookLM will soon get a new feature that creates AI-generated summaries and educational videos from your content. Read more...",
+      "url": "https://www.neowin.net/news/googles-notebooklm-gets-video-overviews-and-duration-control-for-audio-overviews/",
+      "urlToImage": "https://cdn.neowin.com/news/images/uploaded/2025/05/1747813997_google_notebooklm_story.jpg",
+      "publishedAt": "2025-05-21T08:24:01Z",
+      "content": "At I/O 2025, Google announced a new AI-powered feature for NotebookLM, its research and note-taking tool. The feature is called Video Overviews, and as the name suggests, it adds visual elements to t… [+2080 chars]",
+      "sentiment": "positive"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Torrentfreak.com"
+      },
+      "author": "Andy Maxwell",
+      "title": "Live Sports Piracy: France ‘Contained’ Illegal IPTV & Illicit Streaming in 2024",
+      "description": "Telecoms regulator Arcom has published a new report on the illicit streaming of sports content in France. In 2024, 18% of French citizens accessed sports content illegally, a figure unchanged from the previous year. Arcom notifications led to the blocking of …",
+      "url": "https://torrentfreak.com/live-sports-piracy-france-contained-illegal-iptv-illicit-streaming-in-2024-250521/",
+      "urlToImage": "https://torrentfreak.com/images/stade-de-ball2.png",
+      "publishedAt": "2025-05-21T08:22:25Z",
+      "content": "Around 15 years ago, the French government launched an expansive monitoring and enforcement system to fight online piracy.\r\nWith fines and internet terminations for recidivists, the so-called Hadopi … [+6809 chars]",
+      "sentiment": "negative"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Headlines"
+      },
+      "author": "Rishaj Upadhyay",
+      "title": "Magic Portrait Spices Up Your Pixel's Lock Screen",
+      "description": "Magic Portrait on Android 16 adds different frames and weather effects to the Pixel lock screen for a more dynamic, personalized look.",
+      "url": "https://www.androidheadlines.com/2025/05/magic-portrait-google-pixel-android-16.html",
+      "urlToImage": "https://www.androidheadlines.com/wp-content/uploads/2024/08/Google-Pixel-9-Pro-AM-AH-03.jpg",
+      "publishedAt": "2025-05-21T08:22:19Z",
+      "content": "Google started rolling out Android 16 QPR1 Beta 1 to eligible Pixel devices, the same day it kicked off this years I/O event. The latest beta update brings a bunch of new features that are worth talk… [+2139 chars]",
+      "sentiment": "positive"
+    }
+  ],
+  "summary": "Google's NotebookLM gets Video Overviews and duration control for Audio Overviews. Meghan Markle included rare photos of her and Prince Harry from their first year of romance. Magic Portrait on Android 16 adds different frames and weather effects to the Pixel lock screen."
+}
