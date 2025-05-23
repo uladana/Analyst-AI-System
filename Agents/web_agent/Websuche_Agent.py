@@ -85,3 +85,5 @@ def get_latest_news(company_name, max_results=5):
 # Testweise Ausführung
 if __name__ == "__main__":
     get_latest_news("Google")
+    
+    #sdfghjklög
