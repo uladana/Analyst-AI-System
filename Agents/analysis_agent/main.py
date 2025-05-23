@@ -8,6 +8,7 @@ from agents.analysis_agent.explainer import (
     generate_summary_table,
     export_summaries_to_txt
 )
+
 from agents.analysis_agent.forecast import predict_by_company
 
 # 1. Definir ruta a los datos JSON
@@ -21,13 +22,28 @@ print(df.head(2))
 # 3. Preprocesar los datos para visualizaciones
 df_clean = preprocess(df)
 
+
+
+
+from agents.analysis_agent.agent import create_react_agent
+
+# Crear el agente reactivo
+agent = create_react_agent(df, df_clean)
+
+# Simulación de uso (esto se puede comentar o reemplazar por Gradio más adelante)
+# print(agent("Dame un resumen de Google"))
+# print(agent("Haz un gráfico por trimestre"))
+# print(agent("Haz una predicción de Microsoft"))
+
+
+
 # 4. Validación
 if df_clean.empty:
     print(" Der saubere DataFrame ist leer. Überprüfen Sie die Daten.")
 else:
     # 5. Visualización anual y trimestral
-    plot_trend_by_company(df_clean)
-    plot_quarterly_trend(df_clean)
+    # plot_trend_by_company(df_clean)
+    # plot_quarterly_trend(df_clean)
 
     # 6. Generar resúmenes por empresa
     companies = ["Apple", "Microsoft", "Google", "NVIDIA", "Meta"]
@@ -38,10 +54,16 @@ else:
     # 7. Generar tabla
     generate_summary_table(df_clean)
 
-    # 8. Predicciones
-    for company in companies:
-        print(f"\n Vorhersage generieren für {company}...")
-        predict_by_company(df_clean, company)
+    # # 8. Predicciones
+    # for company in companies:
+    #     print(f"\n Vorhersage generieren für {company}...")
+    #     predict_by_company(df_clean, company, show_plot=False)
 
     # 9. Exportar resúmenes
     export_summaries_to_txt(df, companies)
+
+    while True:
+        user_input = input("\n Gib deine Anfrage ein (oder 'beenden'): ")
+        if user_input.lower() == "beenden":
+            break
+        print(agent(user_input))

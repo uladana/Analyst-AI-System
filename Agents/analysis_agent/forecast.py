@@ -1,8 +1,10 @@
+# agents/analysis_agent/forest.py
+
 from prophet import Prophet
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def predict_by_company(df, company, column="document_count"):
+def predict_by_company(df, company, column="document_count", show_plot=False):
     # Filtrar por empresa
     df_company = df[df["company"] == company].copy()
 
@@ -15,7 +17,7 @@ def predict_by_company(df, company, column="document_count"):
     df_grouped = df_grouped.rename(columns={"date": "ds", column: "y"})
 
     if df_grouped.shape[0] < 2:
-        print(f"⚠️ Nicht genügend Daten für {company}, um eine Prognose durchzuführen.")
+        print(f"Nicht genügend Daten für {company}, um eine Prognose durchzuführen.")
         return None, None
 
     # Entrenar modelo Prophet
@@ -33,6 +35,8 @@ def predict_by_company(df, company, column="document_count"):
     plt.ylabel("Anzahl der Dokumente")
     plt.tight_layout()
     plt.savefig(f"forecast_{company.lower()}.png", dpi=300)
-    plt.show()
+
+    if show_plot:
+        plt.show()
 
     return forecast, model

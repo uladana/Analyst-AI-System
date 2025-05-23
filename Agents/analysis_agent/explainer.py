@@ -1,3 +1,5 @@
+# agents/analysis_agent/explainer.py
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -21,7 +23,7 @@ def generate_summary(df: pd.DataFrame, company: str) -> str:
 
     return f"{company}: Tendenz {tendenz}. Durchschnittliche Anzahl an Dokumenten pro Jahr: {durchschnitt:.1f}."
 
-def generate_summary_table(df: pd.DataFrame):
+def generate_summary_table(df: pd.DataFrame, show_plot=False):
     df.columns = [col.lower() for col in df.columns]
 
     if "company" not in df.columns or "year" not in df.columns:
@@ -52,7 +54,9 @@ def generate_summary_table(df: pd.DataFrame):
     plt.title(" Zusammenfassung nach Unternehmen (2019–2024)", pad=20)
     plt.tight_layout()
     plt.savefig("summary_table.png", dpi=300)
-    plt.show()
+
+    if show_plot:
+        plt.show()
 
 def export_summaries_to_txt(df: pd.DataFrame, companies: list, filename="Zusammenfassung_Unternehmen.txt"):
     with open(filename, "w", encoding="utf-8") as f:

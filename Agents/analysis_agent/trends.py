@@ -27,7 +27,7 @@ def load_json_data(folder_path):
                     for entry in entries:
                         if isinstance(entry, dict):
                             entry["source_file"] = file
-                            entry["year"] = year  # ✅ clave: columna debe llamarse 'year'
+                            entry["year"] = year  # clave: columna debe llamarse 'year'
                             entry["company"] = company
                             data.append(entry)
                 except Exception as e:
